@@ -159,7 +159,28 @@ button:hover { opacity: 0.95; }
   font-weight: 500;
 }
 
-.hint {
+.sort-row {
+  margin-bottom: 0.8rem;
+}
+
+select {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(100, 116, 139, 0.24);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+select:focus {
+  outline: 2px solid rgba(79, 70, 229, 0.35);
+  outline-offset: 2px;
+  border-color: rgba(79, 70, 229, 0.6);
+}
+
+
   min-height: 1.1rem;
   margin: 0;
   color: #dc2626;

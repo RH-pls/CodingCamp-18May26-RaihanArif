@@ -27,6 +27,7 @@ const els = {
   addTask: $('#addTaskBtn'),
   taskHint: $('#taskHint'),
   taskList: $('#taskList'),
+  sortSelect: $('#sortSelect'),
   linkName: $('#linkName'),
   linkUrl: $('#linkUrl'),
   addLink: $('#addLinkBtn'),
@@ -38,6 +39,7 @@ let remaining = 1500;
 let tasks = [];
 let links = [];
 let alarmSound = null;
+let sortMode = 'default';
 
 const load = (key, fallback) => {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
@@ -121,8 +123,17 @@ function setAlarm(fileDataUrl) {
 
 function normalize(text) { return text.trim().toLowerCase().replace(/\s+/g, ' '); }
 
+function getSortedTasks() {
+  const copy = [...tasks];
+  if (sortMode === 'az') return copy.sort((a, b) => a.text.localeCompare(b.text, 'id'));
+  if (sortMode === 'za') return copy.sort((a, b) => b.text.localeCompare(a.text, 'id'));
+  if (sortMode === 'active') return copy.sort((a, b) => Number(a.done) - Number(b.done));
+  if (sortMode === 'done') return copy.sort((a, b) => Number(b.done) - Number(a.done));
+  return copy; // default: urutan tambah
+}
+
 function renderTasks() {
-  els.taskList.innerHTML = tasks.map(t => `
+  els.taskList.innerHTML = getSortedTasks().map(t => `
     <li data-id="${t.id}">
       <label><input type="checkbox" ${t.done ? 'checked' : ''}><span class="${t.done ? 'done' : ''}">${t.text}</span></label>
       <div>
@@ -202,6 +213,7 @@ function init() {
   });
   els.addTask.addEventListener('click', addTask);
   els.taskInput.addEventListener('keydown', e => e.key === 'Enter' && addTask());
+  els.sortSelect.addEventListener('change', e => { sortMode = e.target.value; renderTasks(); });
   els.taskList.addEventListener('click', e => {
     const id = e.target.closest('li')?.dataset.id; if (!id) return;
     if (e.target.dataset.action === 'delete') deleteTask(id);
